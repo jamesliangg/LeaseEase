@@ -10,6 +10,16 @@ import streamlit as st
 def side_out():
     with st.sidebar:
         st.title("PDF Output")
+        st.markdown(
+            """
+            <style>
+                .sidebar .sidebar-content {
+                    width: 503px;
+                }
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
         displayPDF("./N4.pdf")
 
 def displayPDF(file):

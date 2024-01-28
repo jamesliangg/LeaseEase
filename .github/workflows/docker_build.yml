@@ -25,7 +25,7 @@ jobs:
         run: |
           docker buildx create --use
           docker buildx build \
-            --file ./backend/Dockerfile \
+            --file ./uwuwuend/bwckend/Dockerfile \
             --tag jamesliangg/mchacks-bwckwnd:0.1 \
             --push .
 

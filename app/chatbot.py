@@ -13,9 +13,11 @@ from langchain_openai import OpenAI
 from langchain_openai import ChatOpenAI
 from langchain.pydantic_v1 import BaseModel, Field
 from langchain.tools import BaseTool, StructuredTool, tool
+
 import os
 
 from automata import *
+import pprint
 
 import dotenv
 dotenv.load_dotenv()
@@ -27,8 +29,10 @@ class chatbot:
     def __init__(self):
         return
     
-    def query(self, message, chat_history):
+    async def query(self, message, chat_history, message_placeholder) -> str:
         tools = [PDFAutomataReasonsTenant, PDFAutomataReasonsOwner, cohere_rag]
+        
+        full_response = ""
         
         # Get the prompt to use - you can modify this!
         prompt = hub.pull("hwchase17/openai-functions-agent")
@@ -40,8 +44,24 @@ class chatbot:
 
         # Create an agent executor by passing in the agent and tools
         agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
+        
+        async for chunk in agent_executor.astream(
+            {"input": "what's items are located where the cat is hiding?"}
+            ):
+            # Agent Action
+            if "actions" in chunk:
+                for action in chunk["actions"]:
+                    message_placeholder.markdown(f"Calling Tool: `{action.tool}` with input `{action.tool_input}`")
+            # Observation
+            elif "steps" in chunk:
+                for step in chunk["steps"]:
+                    message_placeholder.markdown(f"Tool Result: `{step.observation}`")
+            # Final result
+            elif "output" in chunk:
+                message_placeholder.markdown(f'Final Output: {chunk["output"]}')
+            else:
+                raise ValueError()
+            message_placeholder.markdown("---")
 
-        async for chunk in agent_executor.astream({"input": message}):
-            chunks.append(chunk)
-            print("------")
-            pprint.pprint(chunk, depth=1)
+        return full_response
+        

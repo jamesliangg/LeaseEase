@@ -1,11 +1,12 @@
 import base64
 import random
 import time
-from ...backend.chatbot import *
 from streamlit_extras.switch_page_button import switch_page
-
+import sys
+import os
+sys.path.insert(1, os.getcwd())
+from chatbot import chatbot
 import streamlit as st
-
 
 def side_out():
     with st.sidebar:
@@ -22,7 +23,7 @@ def displayPDF(file):
     st.markdown(pdf_display, unsafe_allow_html=True)
 
 def chat():
-    st.title("Chat here uwu")
+    st.title("Chat")
 
     st.session_state.bot = chatbot()
 

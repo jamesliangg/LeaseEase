@@ -1,5 +1,54 @@
 <html>
-    <body>
-        <h1>Insrt uwu here</h1>
-    </body>
+<head>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 10px;
+    }
+
+    h1 {
+      font-size: 20px;
+      color: #333;
+    }
+
+    label {
+      display: block;
+      margin: 10px 0;
+    }
+
+    input[type="checkbox"] {
+      margin-right: 5px;
+    }
+
+    button {
+      display: block;
+      margin: 20px 0;
+      padding: 10px 20px;
+      background-color: #4285F4;
+      border: none;
+      color: white;
+      cursor: pointer;
+    }
+  </style>
+<!--    <script nonce="random_value">-->
+<!--        // Your inline script here-->
+<!--    </script>-->
+<!--    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'nonce-random_value';">-->
+</head>
+<body>
+  <h1>Options</h1>
+<!--  <form id="options-form" onclick="location.href='https://www.dictionary.com/e/slang/uwu/'">-->
+  <form id="options-form">
+    <label>
+      <input type="checkbox" id="dark-mode" name="dark-mode">
+      Enable dark mode
+    </label>
+    <label>
+      <input type="checkbox" id="notifications" name="notifications">
+      Show notifications
+    </label>
+    <button id="save-button">Save</button>
+  </form>
+  <script src="options.js"></script>
+</body>
 </html>

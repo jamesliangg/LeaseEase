@@ -36,6 +36,7 @@ def PDFAutomataReasonsTenant(reason1: bool, reason2: bool, reason3: bool,
 
   BASE_URL = "https://api.pdf.co/v1"
 
+  # Initial pdf start at: ./forms/initial_T1_Form.pdf
   uploadedFileUrl = "https://tribunalsontario.ca/documents/ltb/Tenant%20Applications%20&%20Instructions/T1.pdf"
 
   reasonList = ""
@@ -59,7 +60,7 @@ def PDFAutomataReasonsTenant(reason1: bool, reason2: bool, reason3: bool,
 
   fieldsStrings = f"3;form1[0].#subform[8].Reason1[0];{reason1}|3;form1[0].#subform[8].Reason2[0];{reason2}|4;form1[0].#subform[11].Reason3[0];{reason3}|4;form1[0].#subform[11].Reason4[0];{reason4}|4;form1[0].#subform[11].Reason5[0];{reason5}|4;form1[0].#subform[11].Reason6[0];{reason6}|4;form1[0].#subform[11].Reason7[0];{reason7}|4;form1[0].#subform[11].Reason8[0];{reason8}|5;form1[0].#subform[12].ReasonTable[0].Row1[0].ReasonField[0];{reasonList}|5;form1[0].#subform[12].ReasonTable[0].Row1[0].ReasonDetail[0];{explanations}"
 
-  destFile = f"..\\{outputFileName}"
+  destFile = f"./forms/{outputFileName}"
 
   parameters = {}
   parameters["name"] = destFile
@@ -112,6 +113,7 @@ def PDFAutomataReasonsOwner(reason1: bool, reason2: bool, reason3: bool,
 
   BASE_URL = "https://api.pdf.co/v1"
 
+# Initial pdf start at: ./forms/initial_N7_Form.pdf
   uploadedFileUrl = "https://tribunalsontario.ca/documents/ltb/Notices%20of%20Termination%20&%20Instructions/N7.pdf"
 
   reasonList = ""

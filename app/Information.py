@@ -1,3 +1,5 @@
+from initialBuilder import *
+
 import streamlit as st
 from streamlit_extras.switch_page_button import switch_page
 
@@ -20,10 +22,17 @@ if __name__ == "__main__":
             tl_name = st.text_input('Tenant Last name', value=None, placeholder="Doe")
             t_street = st.text_input('Street Address', value=None, placeholder="Type your address")
             td_number = st.text_input("Tenant Day phone number", value=None, placeholder="Type a number...")
+            t_municipality = st.text_input("Tenant's Municipality", value=None, placeholder="Type your municipality")
+            t_post_code = st.text_input("Tenant's Postal code", value=None, placeholder="Type your postal code")
             te_mail = st.text_input('Tenant Email', value=None, placeholder="username@gmail.com")
             st.title('Signature')
             signature = st.text_input("Tenant Signature", value=None, placeholder="Type your FULL NAME")
             submit = st.form_submit_button(f'Submit! 🔨')
             if submit:
                 st.write('Submitted')
+
+                T1_Form(lf_name, ll_name, l_street, l_unit, l_municipality, l_post_code, le_email, tf_name, tl_name, t_street, td_number, t_municipality, t_post_code, te_mail)
+
+                N7_Form(lf_name, ll_name, l_street, l_unit, l_municipality, l_post_code, le_email, tf_name, tl_name, t_street, td_number, t_municipality, t_post_code, te_mail)
+
                 switch_page("Chat")

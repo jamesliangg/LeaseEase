@@ -25,7 +25,8 @@ async function replaceText() {
         }
     });
 
-    const text = document.querySelectorAll('h1, h2, h3, h4, h5, p, li, td ,caption, span, a');
+    // const text = document.querySelectorAll('h1, h2, h3, h4, h5, p, li, td ,caption, span, a');
+    const text = document.querySelectorAll('h1, h2, h3, h4, h5, p ,caption, span, a');
     // const text = document.querySelectorAll('h1, h2, h3, h4, h5, p, li, td ,caption');
     for (let i = 0; i < text.length; i++) {
         if (text[i].innerHTML.includes("img")) {
@@ -61,7 +62,7 @@ async function replaceText() {
         try {
             let response = await fetch(url);
             let data = await response.json();
-            element = `${data.result}`;
+            element = `${data.result.replaceAll('bulge', ' ').replaceAll('twerk', ' ')}`;
             text[i].innerText = element;
         } catch (error) {
             console.error(error);

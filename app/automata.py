@@ -18,7 +18,7 @@ PDF_CO_API_KEY = os.environ["PDF_CO_API_KEY"]
 @tool
 def PDFAutomataReasonsTenant(reason1: bool, reason2: bool, reason3: bool,
                        reason4: bool, reason5: bool, reason6: bool,
-                       reason7: bool, reason8: bool, explanations: str) -> str:
+                       reason7: bool, reason8: bool, explanations: str) -> bool:
   """
   Fills the T1 form for the user.
   Background Information: Information about the landlord and the tenant.
@@ -30,7 +30,7 @@ def PDFAutomataReasonsTenant(reason1: bool, reason2: bool, reason3: bool,
   Reason 6: Landlord ended tenancy without compensation.
   Reason 7: Landlord sold personal property without paying proceeds.
   Reason 8: Landlord failed to notify about Order Prohibiting Rent Increase.
-  Returns the name of the filled PDF file, not the link to the file.
+  Returns true if the form was successfully filled, false otherwise.
   """
 
   outputFileName = "filled_T1_Form.pdf"
@@ -96,11 +96,11 @@ def PDFAutomataReasonsTenant(reason1: bool, reason2: bool, reason3: bool,
   else:
     print(f"Request error: {response.status_code} {response.reason}")
 
-  return outputFileName
+  return True
 
 @tool
 def PDFAutomataReasonsOwner(reason1: bool, reason2: bool, reason3: bool,
-                            reason4: bool, explanations: str) -> str:
+                            reason4: bool, explanations: str) -> bool:
   """
   Fills the N7 form for the user.
   Background Information: Information about the landlord and the tenant.
@@ -108,7 +108,7 @@ def PDFAutomataReasonsOwner(reason1: bool, reason2: bool, reason3: bool,
   Reason 2: Intentional damage to the rental unit or complex by you or your guests.
   Reason 3: Using the unit or complex in a non-residential way causing or risking serious damage.
   Reason 4: Your actions or those of your guests significantly disrupt enjoyment in our small shared building.
-  Returns the name of the filled PDF file, not the link to the file.
+  Returns true if the form was successfully filled, false otherwise.
   """
 
   outputFileName = "filled_N7_Form.pdf"

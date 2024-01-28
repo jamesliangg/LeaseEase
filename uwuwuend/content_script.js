@@ -1,5 +1,9 @@
 // https://medium.com/@ConnorFinnegan/how-to-make-a-simple-text-replacement-chrome-extension-3e7aa9fa301f
 
+function getRandomInt(max) {
+  return Math.floor(Math.random() * max);
+}
+
 async function replaceText() {
     const text = document.querySelectorAll('h1, h2, h3, h4, h5, p, li, td ,caption, span, a');
     // const text = document.querySelectorAll('h1, h2, h3, h4, h5, p, li, td ,caption');
@@ -18,8 +22,8 @@ async function replaceText() {
                     try {
                         let response = await fetch(url);
                         let data = await response.json();
-                        console.log(node_value);
-                        console.log(data.result);
+                        // console.log(node_value);
+                        // console.log(data.result);
                         text[i].childNodes[j].nodeValue = data.result;
                     } catch (error) {
                         console.error(error);
@@ -43,6 +47,30 @@ async function replaceText() {
             console.error(error);
         }
     }
+    const images = document.querySelectorAll('img');
+    let image_list = [];
+    await fetch('https://api.memegen.link/templates/')
+      .then(res => res.json())
+      .then(json => {
+        image_list = json;
+        // console.log(image_list);
+
+      });
+    // console.log(image_list[getRandomInt(image_list.length)].blank);
+    // const newSrc = 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Stylized_uwu_emoticon.svg/640px-Stylized_uwu_emoticon.svg.png';
+
+    images.forEach(img => {
+        const newSrc = image_list[getRandomInt(image_list.length)].blank;
+        // console.log(img.src)
+        // console.log(img)
+        img.src = newSrc;
+        try {
+            img.srcset = newSrc;
+        }
+        catch (error) {
+
+        }
+    });
 }
 
 window.addEventListener("load", replaceText);

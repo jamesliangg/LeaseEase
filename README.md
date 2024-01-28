@@ -1,7 +1,5 @@
 # McHacks
 
-## Project Story for LeaseEase
-
 ### Inspiration
 The genesis of LeaseEase lies in the escalating housing crisis in Canada, where landlords have increasingly exploited students and other vulnerable groups. Recognizing the urgent need for accessible legal resources, we envisioned LeaseEase as a beacon of support and empowerment. Our goal was to create a tool that simplifies the complexities of tenant rights under the Canadian Residential Tenancy Act, making legal protection accessible to those who need it most.
 

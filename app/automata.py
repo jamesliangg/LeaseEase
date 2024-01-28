@@ -38,7 +38,12 @@ def PDFAutomataReasonsTenant(reason1: bool, reason2: bool, reason3: bool,
   BASE_URL = "https://api.pdf.co/v1"
 
   # Initial pdf start at: ./forms/initial_T1_Form.pdf
-  uploadedFileUrl = "./forms/initial_T1_Form.pdf"
+  uploadedLocalFileUrl = "./forms/initial_T1_Form.pdf"
+
+  uploadedFileUrl = uploadFile(uploadedLocalFileUrl, BASE_URL)
+  if (uploadedFileUrl == None):
+    return False
+      # print(f"Uploaded File URL: {uploadedFileUrl}")
 
   reasonList = ""
   if reason1:
@@ -116,7 +121,11 @@ def PDFAutomataReasonsOwner(reason1: bool, reason2: bool, reason3: bool,
   BASE_URL = "https://api.pdf.co/v1"
 
 # Initial pdf start at: ./forms/initial_N7_Form.pdf
-  uploadedFileUrl = "./forms/initial_N7_Form.pdf"
+  uploadedLocalFileUrl = "./forms/initial_N7_Form.pdf"
+
+  uploadedFileUrl = uploadFile(uploadedLocalFileUrl, BASE_URL)
+  if (uploadedFileUrl == None):
+    return False
 
   reasonList = ""
   if reason1:
@@ -219,3 +228,37 @@ def cohere_rag(user_query : str) -> str:
         content += str(i + 1) + ". Residential Tenancies Act, 2006, S.O. 2006, c. 17\n"+ docs[i].metadata['snippet'] + "\n\n"
   
     return content 
+
+
+def uploadFile(fileName, BASE_URL):
+    """Uploads file to the cloud"""
+    
+    # 1. RETRIEVE PRESIGNED URL TO UPLOAD FILE.
+
+    # Prepare URL for 'Get Presigned URL' API request
+    url = "{}/file/upload/get-presigned-url?contenttype=application/octet-stream&name={}".format(
+        BASE_URL, os.path.basename(fileName))
+    
+    # Execute request and get response as JSON
+    response = requests.get(url, headers={ "x-api-key": PDF_CO_API_KEY })
+    if (response.status_code == 200):
+        json = response.json()
+        
+        if json["error"] == False:
+            # URL to use for file upload
+            uploadUrl = json["presignedUrl"]
+            # URL for future reference
+            uploadedFileUrl = json["url"]
+
+            # 2. UPLOAD FILE TO CLOUD.
+            with open(fileName, 'rb') as file:
+                requests.put(uploadUrl, data=file, headers={ "x-api-key": PDF_CO_API_KEY, "content-type": "application/octet-stream" })
+
+            return uploadedFileUrl
+        else:
+            # Show service reported error
+            print(json["message"])    
+    else:
+        print(f"Request error: {response.status_code} {response.reason}")
+
+    return None

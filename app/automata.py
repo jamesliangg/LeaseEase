@@ -8,6 +8,9 @@ from langchain.retrievers.document_compressors import CohereRerank
 from langchain.retrievers import ContextualCompressionRetriever
 from langchain_community.retrievers import CohereRagRetriever
 
+import datetime
+import random
+
 import pickle
 import os
 
@@ -105,7 +108,7 @@ def PDFAutomataReasonsTenant(reason1: bool, reason2: bool, reason3: bool,
 
 @tool
 def PDFAutomataReasonsOwner(reason1: bool, reason2: bool, reason3: bool,
-                            reason4: bool, explanations: str) -> bool:
+                            reason4: bool, explanations: list) -> bool:
   """
   Fills the N7 form for the user.
   Background Information: Information about the landlord and the tenant.
@@ -137,9 +140,21 @@ def PDFAutomataReasonsOwner(reason1: bool, reason2: bool, reason3: bool,
   if reason4:
     reasonList += "4; "
 
-  fieldsStrings = f"0;form1[0].#subform[0].Reason1[0];{reason1}|0;form1[0].#subform[0].Reason2[0];{reason2}|0;form1[0].#subform[0].Reason3[0];{reason3}|0;form1[0].#subform[0].Reason4[0];{reason4}|0;form1[0].#subform[0].Details_of_the_Events[0].Table2[0].Row1[0].Event1[0];{explanation[0]}|0;form1[0].#subform[0].Details_of_the_Events[0].Table2[0].Row2[0].Event2[0];{explanation[1]}|1;form1[0].#subform[0].Details_of_the_Events[0].Table2[0].Row3[0].Event3[0];{explanaion[2]}"
+  # fieldsStrings = f"0;form1[0].#subform[0].Reason1[0];{reason1}|0;form1[0].#subform[0].Reason2[0];{reason2}|0;form1[0].#subform[0].Reason3[0];{reason3}|0;form1[0].#subform[0].Reason4[0];{reason4}|0;form1[0].#subform[0].Details_of_the_Events[0].Table2[0].Row1[0].Event1[0];{explanations[0]}|0;form1[0].#subform[0].Details_of_the_Events[0].Table2[0].Row2[0].Event2[0];{explanations[1]}|1;form1[0].#subform[0].Details_of_the_Events[0].Table2[0].Row3[0].Event3[0];{explanaions[2]}"
 
-  destFile = f"..\\{outputFileName}"
+  fieldsStrings = f"0;form1[0].#subform[0].Reason1[0];{reason1}|0;form1[0].#subform[0].Reason2[0];{reason2}|0;form1[0].#subform[0].Reason3[0];{reason3}|0;form1[0].#subform[0].Reason4[0];{reason4}"
+
+  print(explanations[0])
+
+  for i in range(len(explanations)):
+    if (i != 2):
+      index = 0
+    fieldsStrings += "|" + f"{index};form1[0].#subform[0].Details_of_the_Events[0].Table2[0].Row1[0].Event1[0];{explanations[i]}|{index};form1[0].#subform[0].Details_of_the_Events[0].Table2[0].Row1[0].EventDateTime1[0];{getRandDate()}"
+    index = 1
+  
+  print(fieldsStrings)
+
+  destFile = os.path.join(os.path.dirname(__file__), "forms", outputFileName)
 
   parameters = {}
   parameters["name"] = destFile
@@ -262,3 +277,12 @@ def uploadFile(fileName, BASE_URL):
         print(f"Request error: {response.status_code} {response.reason}")
 
     return None
+
+
+def getRandDate() -> str:
+  start_date = datetime.date(2022, 10, 1)
+  end_date   = datetime.date(2022, 11, 30)
+  num_days   = (end_date - start_date).days
+  rand_days   = random.randint(1, num_days)
+  random_date = start_date + datetime.timedelta(days=rand_days)
+  return random_date

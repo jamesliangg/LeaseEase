@@ -7,6 +7,7 @@ from langchain_community.vectorstores import Chroma
 from langchain.retrievers.document_compressors import CohereRerank
 from langchain.retrievers import ContextualCompressionRetriever
 from langchain_community.retrievers import CohereRagRetriever
+from langchain_core.messages import HumanMessage
 
 import pickle
 import os
@@ -15,13 +16,25 @@ import dotenv
 dotenv.load_dotenv()
 PDF_CO_API_KEY = os.environ["PDF_CO_API_KEY"]
 
+# use Cohere langchain API to create more professional explanations
+def explain_reasons(reasons: str) -> str:
+  """
+  This function uses Cohere's langchain API to create more professional explanations for the reasons the user has selected.
+  reasons: The reasons the user has selected.
+  """
+
+  chat = ChatCohere(model="command", max_tokens=20, temperature=0)
+  messages = [HumanMessage(content="Answer the question/demand directly. Explain the following reasons in more professional terms for a tenant or landlord filing a complaint. Below are the reasons: " + reasons + ".")]
+  output = chat.invoke(messages)
+  return output
+
 @tool
 def PDFAutomataReasonsTenant(reason1: bool, reason2: bool, reason3: bool,
                        reason4: bool, reason5: bool, reason6: bool,
                        reason7: bool, reason8: bool, explanations: str) -> bool:
   """
   Fills the T1 form for the user.
-  Background Information: Information about the landlord and the tenant.
+  explanations: Information about the landlord and the tenant.
   Reason 1: Landlord charged illegal rent.
   Reason 2: Paid illegal charge to landlord/agent/superintendent.
   Reason 3: Landlord misused last month's rent deposit.
@@ -58,7 +71,7 @@ def PDFAutomataReasonsTenant(reason1: bool, reason2: bool, reason3: bool,
   if reason8:
     reasonList += "8; "
 
-  fieldsStrings = f"3;form1[0].#subform[8].Reason1[0];{reason1}|3;form1[0].#subform[8].Reason2[0];{reason2}|4;form1[0].#subform[11].Reason3[0];{reason3}|4;form1[0].#subform[11].Reason4[0];{reason4}|4;form1[0].#subform[11].Reason5[0];{reason5}|4;form1[0].#subform[11].Reason6[0];{reason6}|4;form1[0].#subform[11].Reason7[0];{reason7}|4;form1[0].#subform[11].Reason8[0];{reason8}|5;form1[0].#subform[12].ReasonTable[0].Row1[0].ReasonField[0];{reasonList}|5;form1[0].#subform[12].ReasonTable[0].Row1[0].ReasonDetail[0];{explanations}"
+  fieldsStrings = f"3;form1[0].#subform[8].Reason1[0];{reason1}|3;form1[0].#subform[8].Reason2[0];{reason2}|4;form1[0].#subform[11].Reason3[0];{reason3}|4;form1[0].#subform[11].Reason4[0];{reason4}|4;form1[0].#subform[11].Reason5[0];{reason5}|4;form1[0].#subform[11].Reason6[0];{reason6}|4;form1[0].#subform[11].Reason7[0];{reason7}|4;form1[0].#subform[11].Reason8[0];{reason8}|5;form1[0].#subform[12].ReasonTable[0].Row1[0].ReasonField[0];{reasonList}|5;form1[0].#subform[12].ReasonTable[0].Row1[0].ReasonDetail[0];{explain_reasons(explanations)}"
 
   # use os to get path to forms folder securely
   destFile = os.path.join(os.path.dirname(__file__), "forms", outputFileName)
@@ -103,7 +116,7 @@ def PDFAutomataReasonsOwner(reason1: bool, reason2: bool, reason3: bool,
                             reason4: bool, explanations: str) -> bool:
   """
   Fills the N7 form for the user.
-  Background Information: Information about the landlord and the tenant.
+  explanations: Information about the landlord and the tenant.
   Reason 1: Unsafe behavior by you or your guests in the complex.
   Reason 2: Intentional damage to the rental unit or complex by you or your guests.
   Reason 3: Using the unit or complex in a non-residential way causing or risking serious damage.
@@ -128,7 +141,7 @@ def PDFAutomataReasonsOwner(reason1: bool, reason2: bool, reason3: bool,
   if reason4:
     reasonList += "4; "
 
-  fieldsStrings = f"0;form1[0].#subform[0].Reason1[0];{reason1}|0;form1[0].#subform[0].Reason2[0];{reason2}|0;form1[0].#subform[0].Reason3[0];{reason3}|0;form1[0].#subform[0].Reason4[0];{reason4}|0;form1[0].#subform[0].Details_of_the_Events[0].Table2[0].Row1[0].Event1[0];{explanation[0]}|0;form1[0].#subform[0].Details_of_the_Events[0].Table2[0].Row2[0].Event2[0];{explanation[1]}|1;form1[0].#subform[0].Details_of_the_Events[0].Table2[0].Row3[0].Event3[0];{explanaion[2]}"
+  fieldsStrings = f"0;form1[0].#subform[0].Reason1[0];{reason1}|0;form1[0].#subform[0].Reason2[0];{reason2}|0;form1[0].#subform[0].Reason3[0];{reason3}|0;form1[0].#subform[0].Reason4[0];{reason4}|0;form1[0].#subform[0].Details_of_the_Events[0].Table2[0].Row1[0].Event1[0];{explanation[0]}|0;form1[0].#subform[0].Details_of_the_Events[0].Table2[0].Row2[0].Event2[0];{explanation[1]}|1;form1[0].#subform[0].Details_of_the_Events[0].Table2[0].Row3[0].Event3[0];{explanation[2]}"
 
   destFile = f"..\\{outputFileName}"
 

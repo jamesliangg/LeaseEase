@@ -30,6 +30,7 @@ def PDFAutomataReasonsTenant(reason1: bool, reason2: bool, reason3: bool,
   Reason 6: Landlord ended tenancy without compensation.
   Reason 7: Landlord sold personal property without paying proceeds.
   Reason 8: Landlord failed to notify about Order Prohibiting Rent Increase.
+  Returns the name of the filled PDF file, not the link to the file.
   """
 
   outputFileName = "filled_T1_Form.pdf"
@@ -37,7 +38,7 @@ def PDFAutomataReasonsTenant(reason1: bool, reason2: bool, reason3: bool,
   BASE_URL = "https://api.pdf.co/v1"
 
   # Initial pdf start at: ./forms/initial_T1_Form.pdf
-  uploadedFileUrl = "https://tribunalsontario.ca/documents/ltb/Tenant%20Applications%20&%20Instructions/T1.pdf"
+  uploadedFileUrl = "./forms/initial_T1_Form.pdf"
 
   reasonList = ""
   if reason1:
@@ -57,10 +58,10 @@ def PDFAutomataReasonsTenant(reason1: bool, reason2: bool, reason3: bool,
   if reason8:
     reasonList += "8; "
 
-
   fieldsStrings = f"3;form1[0].#subform[8].Reason1[0];{reason1}|3;form1[0].#subform[8].Reason2[0];{reason2}|4;form1[0].#subform[11].Reason3[0];{reason3}|4;form1[0].#subform[11].Reason4[0];{reason4}|4;form1[0].#subform[11].Reason5[0];{reason5}|4;form1[0].#subform[11].Reason6[0];{reason6}|4;form1[0].#subform[11].Reason7[0];{reason7}|4;form1[0].#subform[11].Reason8[0];{reason8}|5;form1[0].#subform[12].ReasonTable[0].Row1[0].ReasonField[0];{reasonList}|5;form1[0].#subform[12].ReasonTable[0].Row1[0].ReasonDetail[0];{explanations}"
 
-  destFile = f"./forms/{outputFileName}"
+  # use os to get path to forms folder securely
+  destFile = os.path.join(os.path.dirname(__file__), "forms", outputFileName)
 
   parameters = {}
   parameters["name"] = destFile
@@ -107,6 +108,7 @@ def PDFAutomataReasonsOwner(reason1: bool, reason2: bool, reason3: bool,
   Reason 2: Intentional damage to the rental unit or complex by you or your guests.
   Reason 3: Using the unit or complex in a non-residential way causing or risking serious damage.
   Reason 4: Your actions or those of your guests significantly disrupt enjoyment in our small shared building.
+  Returns the name of the filled PDF file, not the link to the file.
   """
 
   outputFileName = "filled_N7_Form.pdf"
@@ -114,7 +116,7 @@ def PDFAutomataReasonsOwner(reason1: bool, reason2: bool, reason3: bool,
   BASE_URL = "https://api.pdf.co/v1"
 
 # Initial pdf start at: ./forms/initial_N7_Form.pdf
-  uploadedFileUrl = "https://tribunalsontario.ca/documents/ltb/Notices%20of%20Termination%20&%20Instructions/N7.pdf"
+  uploadedFileUrl = "./forms/initial_N7_Form.pdf"
 
   reasonList = ""
   if reason1:

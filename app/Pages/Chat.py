@@ -27,7 +27,15 @@ def side_out():
             """,
             unsafe_allow_html=True
         )
-        displayPDF("./N4.pdf")
+
+        # find the latest updated pdf in the forms directory, forms directory is inside the parent directory
+        # of the parent directory of the current directory
+        parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        forms_dir = os.path.join(parent_dir, "forms")
+        latest_pdf = max([os.path.join(forms_dir, f) for f in os.listdir(forms_dir)], key=os.path.getmtime)
+
+        # display the latest pdf
+        displayPDF(latest_pdf)
 
 def displayPDF(file):
     # Opening file from file path

@@ -1,6 +1,5 @@
 from langchain_community.llms import Cohere
-from langchain_community.retrievers import CohereRagRetriever
-from langchain.retrievers import ContextualCompressionRetriever
+wfrom langchain.retrievers import ContextualCompressionRetriever
 from langchain.retrievers.document_compressors import CohereRerank
 from langchain_community.embeddings import CohereEmbeddings
 from langchain_community.chat_models import ChatCohere

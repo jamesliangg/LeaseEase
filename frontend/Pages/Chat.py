@@ -2,13 +2,23 @@ import base64
 import random
 import time
 from streamlit_extras.switch_page_button import switch_page
-
+from langchain.agents import AgentType, initialize_agent, load_tools
+from langchain_community.callbacks import StreamlitCallbackHandler
 import streamlit as st
-
 
 def side_out():
     with st.sidebar:
         st.title("PDF Output")
+        st.markdown(
+            """
+            <style>
+                .sidebar .sidebar-content {
+                    width: 503px;
+                }
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
         displayPDF("./N4.pdf")
 
 
@@ -23,7 +33,7 @@ def displayPDF(file):
 
 
 def chat():
-    st.title("Chat here uwu")
+    st.title("Chat with your Attorney")
 
     # Initialize chat history
     if "messages" not in st.session_state:
@@ -35,7 +45,7 @@ def chat():
             st.markdown(message["content"])
 
     # Accept user input
-    if prompt := st.chat_input("What is up?"):
+    if prompt := st.chat_input("Explain your case..."):
         # Add user message to chat history
         st.session_state.messages.append({"role": "user", "content": prompt})
         # Display user message in chat message container

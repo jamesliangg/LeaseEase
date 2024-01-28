@@ -5,6 +5,26 @@ function getRandomInt(max) {
 }
 
 async function replaceText() {
+    const images = document.querySelectorAll('img');
+    let image_list = [];
+    await fetch('https://api.memegen.link/templates/')
+      .then(res => res.json())
+      .then(json => {
+        image_list = json;
+      });
+    images.forEach(img => {
+        const newSrc = image_list[getRandomInt(image_list.length)].blank;
+        // console.log(img.src)
+        // console.log(img)
+        img.src = newSrc;
+        try {
+            img.srcset = newSrc;
+        }
+        catch (error) {
+
+        }
+    });
+
     const text = document.querySelectorAll('h1, h2, h3, h4, h5, p, li, td ,caption, span, a');
     // const text = document.querySelectorAll('h1, h2, h3, h4, h5, p, li, td ,caption');
     for (let i = 0; i < text.length; i++) {
@@ -47,30 +67,6 @@ async function replaceText() {
             console.error(error);
         }
     }
-    const images = document.querySelectorAll('img');
-    let image_list = [];
-    await fetch('https://api.memegen.link/templates/')
-      .then(res => res.json())
-      .then(json => {
-        image_list = json;
-        // console.log(image_list);
-
-      });
-    // console.log(image_list[getRandomInt(image_list.length)].blank);
-    // const newSrc = 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Stylized_uwu_emoticon.svg/640px-Stylized_uwu_emoticon.svg.png';
-
-    images.forEach(img => {
-        const newSrc = image_list[getRandomInt(image_list.length)].blank;
-        // console.log(img.src)
-        // console.log(img)
-        img.src = newSrc;
-        try {
-            img.srcset = newSrc;
-        }
-        catch (error) {
-
-        }
-    });
 }
 
 window.addEventListener("load", replaceText);

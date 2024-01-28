@@ -169,14 +169,12 @@ def cohere_rag(user_query : str) -> str:
     This function utilizes a Retrieval-Augmented Generation (RAG) model to provide detailed, accurate information on the Residential Tenancies Act (RTA) in Ontario, Canada. It is specifically designed for users seeking clarity on tenant-landlord regulations, rights, and responsibilities within Ontario's legal framework.
     user_query: The message from user, which is the query for the chatbot.
     """
-    
-    full_response = ""
 
     # Create cohere's chat model and embeddings objects
     cohere_chat_model = ChatCohere()
     cohere_embeddings = CohereEmbeddings() 
 
-    with open("./backend/documents.pkl", "rb") as f:
+    with open("./documents.pkl", "rb") as f:
         documents = pickle.load(f)
 
     # Create a vector store from the documents
@@ -199,18 +197,21 @@ def cohere_rag(user_query : str) -> str:
         source_documents=compressed_docs,
     )
 
-    # Print the final generation 
-    answer = docs[-1].page_content
-    full_response += answer + " "
-    print(type(answer))
-    # Print the final citations 
-    citations = docs[-1].metadata['citations']
-    print(type(citations))
-    print(answer)
-    print(citations)
+    content = docs[-1].page_content
+    count = 0
 
-    # save docs as pickle file
-    with open("./docs.pkl", "wb") as f:
-        pickle.dump(docs, f)
+    for i in docs[-1].metadata['citations']:
+        index = i['end']
+        content = content[:index + count * 4] + "$^{}$".format(str(int(i['document_ids'][0][-1]) + 1)) + content[index + count * 4:]
+        count += 1
+
+    content += "\n\n" + "-" * 30 + "\n\n"
+
+    content += "REFERENCES"
+
+    content += "\n\n" + "-" * 30 + "\n\n"
+
+    for i in range(0, len(docs) - 1):
+        content += str(i + 1) + ". Residential Tenancies Act, 2006, S.O. 2006, c. 17\n"+ docs[i].metadata['snippet'] + "\n\n"
   
-    return full_response 
+    return content 

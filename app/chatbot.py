@@ -29,7 +29,7 @@ class chatbot:
     def __init__(self):
         return
     
-    def query(self, message, chat_history, message_placeholder) -> str:
+    def query(self, message, cfg) -> str:
         tools = [PDFAutomataReasonsTenant, PDFAutomataReasonsOwner, cohere_rag]
         
         full_response = ""
@@ -38,35 +38,14 @@ class chatbot:
         prompt = hub.pull("hwchase17/openai-functions-agent")
 
         # Choose the LLM that will drive the agent
-        llm = ChatOpenAI(model="gpt-3.5-turbo-1106")
+        llm = ChatOpenAI(model="gpt-3.5-turbo-1106", temperature=0, streaming=True)
 
         agent = create_openai_functions_agent(llm, tools, prompt)
 
         # Create an agent executor by passing in the agent and tools
-        agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
+        agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True).with_config({"run_name": "Agent"})
         
-        for chunk in agent_executor.stream  (
-            {"input": message}
-            ):
-            pprint.pprint(chunk)
-            # User Input
-            if "input" in chunk:
-                message_placeholder.markdown(f"User Input: `{chunk['input']}`")
-            # Agent Action
-            elif "actions" in chunk:
-                for action in chunk["actions"]:
-                    message_placeholder.markdown(f"Calling Tool: `{action.tool}` with input `{action.tool_input}`")
-            # Observation
-            elif "steps" in chunk:
-                for step in chunk["steps"]:
-                    message_placeholder.markdown(f"Tool Result: `{step.observation}`")
-            # Final result
-            elif "output" in chunk:
-                message_placeholder.markdown(f'Final Output: {chunk["output"]}')
-            else:
-                raise ValueError()
-            message_placeholder.markdown("---")
-
-
-        return full_response
-        
+        # Invoke the agent with the input prompt
+        response = agent_executor.invoke({"input": message}, cfg)
+        return response
+            

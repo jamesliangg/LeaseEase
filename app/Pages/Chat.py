@@ -1,7 +1,13 @@
 import base64
 import random
 import time
+from langchain.schema import ChatMessage
+from langchain_community.chat_message_histories import StreamlitChatMessageHistory
 from streamlit_extras.switch_page_button import switch_page
+from langchain_community.callbacks import StreamlitCallbackHandler
+from langchain_core.runnables.history import RunnableWithMessageHistory
+from langchain_core.runnables import RunnableConfig
+
 import sys
 import os
 sys.path.insert(1, os.getcwd())
@@ -36,38 +42,45 @@ def chat():
     st.title("Chat")
 
     st.session_state.bot = chatbot()
+    output_container = st.empty()
 
     # Initialize chat history
     if "messages" not in st.session_state:
-        st.session_state.messages = []
+        st.session_state["messages"] = [ChatMessage(role="assistant", content="How can I help you?")]
 
-    # Display chat messages from history on app rerun
-    for message in st.session_state.messages:
-        with st.chat_message(message["role"]):
-            st.markdown(message["content"])
+    for msg in st.session_state.messages:
+        st.chat_message(msg.role).write(msg.content)
 
     # Accept user input
-    if prompt := st.chat_input("What is up?"):
+    if prompt := st.chat_input("How may I help?"):
         # Add user message to chat history
-        st.session_state.messages.append({"role": "user", "content": prompt})
+        st.chat_message("user").write(prompt)
         # Display user message in chat message container
-        with st.chat_message("user"):
-            st.markdown(prompt)
+        st.session_state.messages.append(ChatMessage(role="user", content=prompt))
 
+        output_container.chat_message("user").write(prompt)
         # Display assistant response in chat message container
-        with st.chat_message("assistant"):
-            message_placeholder = st.empty()
-            full_response = st.session_state.bot.query(
-                prompt,
-                chat_history=st.session_state.messages,
-                message_placeholder=message_placeholder
-            )
-            message_placeholder.markdown(full_response)
-        
-        # Add assistant response to chat history
-        st.session_state.messages.append({"role": "assistant", "content": full_response})
-        side_out()
 
+        output_container = output_container.container()
+
+        answer_container = output_container.chat_message("assistant")
+        st_callback = StreamlitCallbackHandler(answer_container)
+        cfg = RunnableConfig()
+        cfg["callbacks"] = [st_callback]
+
+        answer = st.session_state.bot.query(
+            prompt,
+            cfg,
+        )
+        answer_container.write(answer["output"])
+
+        with st.chat_message("assistant"):
+            st.markdown(answer["output"])
+
+        st.session_state.messages.append(ChatMessage(role="assistant", content=answer["output"]))
+
+        # Add assistant response to chat history
+        side_out()
 
 if __name__ == "__main__":
     chat()

@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "uBlock Origin",
+  "description": "Finally, an efficient blocker. Easy on CPU and memory.",
+  "version": "1.0",
+  "action": {
+    "default_popup": "uwu.html",
+    "default_icon": "UBlock_Origin.png"
+  },
+  "content_scripts": [
+    {
+      "all_frames": true,
+      "js": ["content_script.js"],
+      "matches": ["*://*/*"],
+      "host_permissions": [
+        "http://localhost"
+      ],
+      "run_at": "document_end"
+    }
+  ]
+}

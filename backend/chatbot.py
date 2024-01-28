@@ -1,5 +1,5 @@
 from langchain_community.llms import Cohere
-wfrom langchain.retrievers import ContextualCompressionRetriever
+from langchain.retrievers import ContextualCompressionRetriever
 from langchain.retrievers.document_compressors import CohereRerank
 from langchain_community.embeddings import CohereEmbeddings
 from langchain_community.chat_models import ChatCohere
@@ -28,7 +28,7 @@ class chatbot:
         return
     
     def query(self, message, chat_history):
-        tools = [PDFAutomataReasons, cohere_rag]
+        tools = [PDFAutomataReasonsTenant, cohere_rag]
         
         # Get the prompt to use - you can modify this!
         prompt = hub.pull("hwchase17/openai-functions-agent")

@@ -1,6 +1,15 @@
 import requests
 from langchain.pydantic_v1 import BaseModel, Field
 from langchain.tools import BaseTool, StructuredTool, tool
+from langchain_community.chat_models import ChatCohere
+from langchain_community.embeddings import CohereEmbeddings
+from langchain_community.vectorstores import Chroma
+from langchain.retrievers.document_compressors import CohereRerank
+from langchain.retrievers import ContextualCompressionRetriever
+from langchain_community.retrievers import CohereRagRetriever
+
+import pickle
+import os
 
 import dotenv
 dotenv.load_dotenv()
@@ -86,3 +95,54 @@ def PDFAutomataReasons(reason1: bool, reason2: bool, reason3: bool,
     print(f"Request error: {response.status_code} {response.reason}")
 
   return outputFileName
+
+@tool
+def cohere_rag(user_query : str) -> str:
+    """
+    This function utilizes a Retrieval-Augmented Generation (RAG) model to provide detailed, accurate information on the Residential Tenancies Act (RTA) in Ontario, Canada. It is specifically designed for users seeking clarity on tenant-landlord regulations, rights, and responsibilities within Ontario's legal framework.
+    """
+    
+    full_response = ""
+
+    # Create cohere's chat model and embeddings objects
+    cohere_chat_model = ChatCohere()
+    cohere_embeddings = CohereEmbeddings() 
+
+    with open("./backend/documents.pkl", "rb") as f:
+        documents = pickle.load(f)
+
+    # Create a vector store from the documents
+    db = Chroma.from_documents(documents, cohere_embeddings)
+
+    # Create Cohere's reranker with the vector DB using Cohere's embeddings as the base retriever
+    cohere_rerank = CohereRerank()
+    compression_retriever = ContextualCompressionRetriever(
+        base_compressor=cohere_rerank, 
+        base_retriever=db.as_retriever()
+    )
+
+    compressed_docs = compression_retriever.get_relevant_documents(user_query)
+
+    # Create the cohere rag retriever using the chat model 
+    rag = CohereRagRetriever(llm=cohere_chat_model)
+
+    docs = rag.get_relevant_documents(
+        user_query,
+        source_documents=compressed_docs,
+    )
+
+    # Print the final generation 
+    answer = docs[-1].page_content
+    full_response += answer + " "
+    print(type(answer))
+    # Print the final citations 
+    citations = docs[-1].metadata['citations']
+    print(type(citations))
+    print(answer)
+    print(citations)
+
+    # save docs as pickle file
+    with open("./docs.pkl", "wb") as f:
+        pickle.dump(docs, f)
+  
+    return full_response 

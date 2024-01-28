@@ -23,10 +23,10 @@ def explain_reasons(reasons: str) -> str:
   reasons: The reasons the user has selected.
   """
 
-  chat = ChatCohere(model="command", max_tokens=20, temperature=0)
-  messages = [HumanMessage(content="Answer the question/demand directly. Explain the following reasons in more professional terms for a tenant or landlord filing a complaint. Below are the reasons: " + reasons + ".")]
+  chat = ChatCohere(model="command-nightly", max_tokens=10, temperature=0)
+  messages = [HumanMessage(content="Answer the question/demand directly. Be short and concise. Explain the following reasons in more professional terms for a tenant or landlord filing a complaint. Below are the reasons: " + reasons + ".")]
   output = chat.invoke(messages)
-  return output
+  return output.content
 
 @tool
 def PDFAutomataReasonsTenant(reason1: bool, reason2: bool, reason3: bool,
@@ -34,7 +34,7 @@ def PDFAutomataReasonsTenant(reason1: bool, reason2: bool, reason3: bool,
                        reason7: bool, reason8: bool, explanations: str) -> bool:
   """
   Fills the T1 form for the user.
-  explanations: Information about the landlord and the tenant.
+  Explanations: Information about the landlord and the tenant.
   Reason 1: Landlord charged illegal rent.
   Reason 2: Paid illegal charge to landlord/agent/superintendent.
   Reason 3: Landlord misused last month's rent deposit.
@@ -118,10 +118,10 @@ def PDFAutomataReasonsTenant(reason1: bool, reason2: bool, reason3: bool,
 
 @tool
 def PDFAutomataReasonsOwner(reason1: bool, reason2: bool, reason3: bool,
-                            reason4: bool, explanations: str) -> bool:
+                            reason4: bool, explanation: list) -> bool:
   """
   Fills the N7 form for the user.
-  explanations: Information about the landlord and the tenant.
+  Explanations: List of at most three strings explaining each reason's background information.
   Reason 1: Unsafe behavior by you or your guests in the complex.
   Reason 2: Intentional damage to the rental unit or complex by you or your guests.
   Reason 3: Using the unit or complex in a non-residential way causing or risking serious damage.

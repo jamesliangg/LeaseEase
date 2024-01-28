@@ -29,7 +29,7 @@ class chatbot:
     def __init__(self):
         return
     
-    async def query(self, message, chat_history, message_placeholder) -> str:
+    def query(self, message, chat_history, message_placeholder) -> str:
         tools = [PDFAutomataReasonsTenant, PDFAutomataReasonsOwner, cohere_rag]
         
         full_response = ""
@@ -45,11 +45,15 @@ class chatbot:
         # Create an agent executor by passing in the agent and tools
         agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
         
-        async for chunk in agent_executor.astream(
-            {"input": "what's items are located where the cat is hiding?"}
+        for chunk in agent_executor.stream  (
+            {"input": message}
             ):
+            pprint.pprint(chunk)
+            # User Input
+            if "input" in chunk:
+                message_placeholder.markdown(f"User Input: `{chunk['input']}`")
             # Agent Action
-            if "actions" in chunk:
+            elif "actions" in chunk:
                 for action in chunk["actions"]:
                     message_placeholder.markdown(f"Calling Tool: `{action.tool}` with input `{action.tool_input}`")
             # Observation
@@ -62,6 +66,7 @@ class chatbot:
             else:
                 raise ValueError()
             message_placeholder.markdown("---")
+
 
         return full_response
         

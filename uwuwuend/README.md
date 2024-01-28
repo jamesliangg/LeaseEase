@@ -17,11 +17,20 @@
 ```
 ### Running the Extension
 #### Node Server
+Can run via Docker container or Node directly
+##### Node
 - `cd` into `bwckwnd`
 - Run `npm install`
 - Run `node index.js`
+
+##### Docker
+- `docker run -p 3000:3000 --platform linux/amd64 -d jamesliangg/mchacks-bwckwnd:0.1`
 #### Extension
 - Go to [chrome://extensions](chrome://extensions)
 - Enable `Developer Mode`
 - Click `Load unpacked` and select the root folder (`uwuwuend`)
 - Load any website and enjoy
+### Building and Running Docker Container
+- Build container `docker buildx build --platform=linux/amd64 --output type=docker -t jamesliangg/<CONTAINER_NAME> .`
+- Push container`docker push jamesliangg/<CONTAINER_NAME>:<VERSION>`
+- Run container `docker run -p 3000:3000 --platform linux/amd64 -d jamesliangg/<CONTAINER_NAME>:<VERSION>`

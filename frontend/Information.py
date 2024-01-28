@@ -4,7 +4,7 @@ from streamlit_extras.switch_page_button import switch_page
 
 if __name__ == "__main__":
     with st.empty().form(key='columns_in_form'):
-        c1, c2 = st.columns(2)
+        c1, c2 = st.columns(2, gap="medium")
         with c1:
             st.title('Landlord info')
             lf_name = st.text_input('Landlord First name', value=None, placeholder="John")
